@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Classroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style id="teacher-styles">
+/* ═══ TEACHER STYLES ═══ */
+:root{--primary:#FF6B35;--secondary:#FFD166;--accent:#06D6A0;--blue:#118AB2;--dark:#073B4C;--light:#FFF9F5;--border:#FFE0CC;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;}
+#teacher-app{display:block;}
+#student-app{display:none;position:fixed;inset:0;z-index:9999;overflow-y:auto;}
+
+header{background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(255,107,53,0.3);}
+header h1{font-family:'Baloo 2',cursive;font-size:1.6rem;color:white;font-weight:800;}
+header span{font-size:.95rem;color:rgba(255,255,255,.85);font-weight:600;}
+.nav-bar{background:white;border-bottom:2px solid var(--border);display:flex;padding:0 28px;}
+.nav-tab{padding:14px 22px;border:none;background:none;font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;color:#aaa;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;}
+.nav-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.tabs-wrapper{background:#fafafa;border-bottom:2px solid var(--border);padding:0 28px;display:flex;gap:6px;overflow-x:auto;align-items:flex-end;}
+.tab-btn{padding:10px 18px;border:none;background:none;font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:700;color:#aaa;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+.add-class-btn{margin-left:auto;padding:7px 16px;background:var(--primary);color:white;border:none;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;align-self:center;transition:background .2s;}
+.add-class-btn:hover{background:#e55a27;}
+.page{display:none;}.page.active{display:block;}
+.t-content{padding:24px 28px;}
+.kho-header,.class-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.page-title,.class-title{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;color:var(--primary);}
+.btn-primary{padding:10px 22px;background:var(--primary);color:white;border:none;border-radius:22px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;}
+.btn-primary:hover{background:#e55a27;}
+.btn-outline{padding:8px 16px;background:white;color:var(--primary);border:2px solid var(--primary);border-radius:20px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;}
+.btn-outline:hover{background:var(--primary);color:white;}
+.btn-green{padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;}
+.btn-green:hover{background:#04b589;}
+.header-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.kho-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+.kho-card{background:white;border-radius:14px;border:2px solid var(--border);padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.kho-card-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;margin-bottom:4px;}
+.kho-card-inst{font-size:.75rem;color:#aaa;font-style:italic;margin-bottom:8px;}
+.kho-card-desc{font-size:.8rem;color:#666;line-height:1.6;margin-bottom:10px;}
+.kho-card-actions{display:flex;gap:8px;}
+.btn-sm{padding:6px 12px;border:none;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+.btn-edit{background:#fff3e0;color:var(--primary);border:1.5px solid var(--border);}
+.btn-del{background:#fff0f0;color:#e55a27;border:1.5px solid #ffd0cc;}
+.lessons-grid{display:flex;flex-direction:column;gap:18px;}
+.lesson-card{background:white;border-radius:16px;border:2px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;}
+.lesson-card-header{background:var(--dark);color:white;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;}
+.lname{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;}
+.del-btn{background:none;border:none;color:rgba(255,255,255,.4);font-size:1rem;cursor:pointer;}
+.lesson-cols{display:grid;grid-template-columns:1fr 1.2fr 1fr;}
+.lesson-col{padding:16px;border-right:2px solid var(--border);}
+.lesson-col:last-child{border-right:none;}
+.col-title{font-family:'Baloo 2',cursive;font-size:.9rem;font-weight:800;color:var(--dark);margin-bottom:10px;}
+textarea.content-input{width:100%;padding:9px 11px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:'Nunito',sans-serif;resize:vertical;min-height:100px;outline:none;line-height:1.6;}
+textarea.content-input:focus{border-color:var(--primary);}
+.hint{font-size:.72rem;color:#bbb;margin-top:5px;}
+.ws-types-label{font-size:.72rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.ws-types-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.ws-chip{padding:4px 10px;border:2px solid #ddd;border-radius:16px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s;background:white;color:#888;user-select:none;}
+.ws-chip.sel{border-color:var(--accent);background:#e8fff5;color:#059669;}
+.ws-actions{display:flex;gap:6px;margin-top:8px;}
+.ws-gen-btn{flex:1;padding:8px;background:var(--secondary);color:var(--dark);border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+.ws-gen-btn:hover{background:#f5c400;}
+.ws-dl-btn{padding:8px 12px;background:var(--blue);color:white;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+.ws-link-btn{width:100%;margin-top:8px;padding:8px;background:linear-gradient(135deg,#7C3AED,#9333ea);color:white;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+.ws-status{margin-top:8px;padding:8px 10px;background:#f9f9f9;border-radius:8px;font-size:.78rem;color:#888;min-height:40px;}
+.ws-status.ready{background:#e8fff5;color:#059669;}
+.hw-label{font-size:.72rem;font-weight:700;color:#888;margin-bottom:5px;}
+.hw-input{width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-size:.82rem;font-family:'Nunito',sans-serif;outline:none;margin-bottom:8px;}
+.hw-input:focus{border-color:var(--accent);}
+textarea.hw-req{width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-size:.82rem;font-family:'Nunito',sans-serif;resize:vertical;min-height:55px;outline:none;}
+textarea.hw-req:focus{border-color:var(--accent);}
+.hw-gen-btn{width:100%;margin-top:8px;padding:8px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+.hw-msg-box{background:#f0fff9;border:2px solid var(--accent);border-radius:8px;padding:10px;font-size:.78rem;line-height:1.7;white-space:pre-wrap;margin-top:8px;}
+.copy-btn{width:100%;margin-top:6px;padding:8px;background:var(--accent);color:white;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;}
+.copy-btn.copied{background:var(--blue);}
+.empty-state{text-align:center;padding:50px 20px;color:#ccc;}
+.empty-state .big{font-size:2.5rem;margin-bottom:10px;}
+/* PRINT */
+#ws-print-area{display:none;position:fixed;inset:0;background:#e0e0e0;z-index:9000;overflow-y:auto;padding:20px 0;}
+.ws-print-close{position:fixed;top:12px;right:12px;z-index:9001;display:flex;gap:8px;}
+.ws-print-close button{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:.9rem;}
+.btn-print-go{background:#118AB2;color:white;}
+.btn-print-back{background:#f0f0f0;color:#333;}
+#ws-edit-panel{width:210mm;margin:0 auto 14px;background:white;border-radius:12px;padding:14px 16px;box-shadow:0 2px 12px rgba(0,0,0,.12);}
+#ws-edit-req:focus{border-color:#FF6B35!important;}
+/* A4 */
+.ws-a4{width:210mm;min-height:297mm;margin:0 auto;padding:14mm 16mm 12mm;background:white;box-shadow:0 4px 30px rgba(0,0,0,.2);font-family:'Times New Roman',serif;}
+.ws-top-bar{display:flex;align-items:center;justify-content:space-between;background:#073B4C;color:white;border-radius:8px;padding:10px 16px;margin-bottom:5mm;}
+.ws-top-bar .ws-lesson-name{font-size:15pt;font-weight:bold;font-family:Arial,sans-serif;}
+.ws-top-bar .ws-class-name{font-size:10pt;opacity:.8;font-family:Arial,sans-serif;}
+.ws-info-row{display:flex;gap:16px;margin-bottom:5mm;font-size:10pt;font-family:Arial,sans-serif;}
+.ws-info-field{flex:1;display:flex;align-items:center;gap:6px;border-bottom:1.5px solid #333;padding-bottom:2px;}
+.ws-info-field span{white-space:nowrap;font-weight:bold;}
+.ws-section{margin-bottom:6mm;}
+.ws-section-header{display:flex;align-items:center;gap:8px;margin-bottom:3mm;}
+.ws-section-num{width:26px;height:26px;background:#073B4C;color:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13pt;font-weight:bold;font-family:Arial,sans-serif;flex-shrink:0;}
+.ws-section-title{font-size:12pt;font-weight:bold;color:#073B4C;font-family:Arial,sans-serif;line-height:1.2;}
+.ws-section-inst{font-size:9.5pt;color:#555;font-style:italic;font-family:Arial,sans-serif;}
+.ws-mcq-item{margin-bottom:4mm;}
+.ws-mcq-q{font-size:10.5pt;font-family:Arial,sans-serif;margin-bottom:1.5mm;line-height:1.5;}
+.ws-mcq-q .qnum{font-weight:bold;margin-right:4px;}
+.ws-mcq-blank{display:inline-block;border-bottom:1.5px solid #333;width:80px;vertical-align:bottom;}
+.ws-mcq-options{display:flex;gap:12mm;padding-left:4mm;}
+.ws-opt{display:flex;align-items:center;gap:4px;font-size:10.5pt;font-family:Arial,sans-serif;}
+.ws-opt-letter{font-weight:bold;font-family:Arial,sans-serif;min-width:20px;font-size:10.5pt;}
+.ws-wordbox{display:flex;flex-wrap:wrap;gap:4px;border:1.5px solid #FFD166;border-radius:8px;padding:5px 10px;background:#FFFBF0;margin-bottom:3mm;}
+.ws-wordbox-item{font-size:10pt;font-family:Arial,sans-serif;font-weight:bold;padding:2px 8px;background:white;border:1px solid #ddd;border-radius:4px;}
+.ws-fill-item{display:flex;align-items:center;gap:6px;margin-bottom:3mm;font-size:10.5pt;font-family:Arial,sans-serif;line-height:1.8;flex-wrap:wrap;}
+.ws-fill-num{font-weight:bold;min-width:18px;}
+.ws-fill-blank{display:inline-block;border-bottom:1.5px solid #333;width:90px;vertical-align:bottom;}
+.ws-unscramble-item{display:flex;align-items:center;gap:8px;margin-bottom:3.5mm;font-size:10.5pt;font-family:Arial,sans-serif;}
+.ws-unscramble-num{font-weight:bold;min-width:18px;}
+.ws-unscramble-word{font-weight:bold;min-width:70px;}
+.ws-unscramble-arrow{color:#888;}
+.ws-unscramble-line{flex:1;border-bottom:1.5px solid #333;}
+.ws-order-item{margin-bottom:3mm;}
+.ws-order-q{font-size:10.5pt;font-family:Arial,sans-serif;margin-bottom:1mm;line-height:1.5;}
+.ws-order-line{border-bottom:1.5px solid #333;margin-top:1mm;height:6mm;}
+.ws-answer-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:4mm;font-size:10.5pt;font-family:Arial,sans-serif;}
+.ws-answer-num{font-weight:bold;min-width:18px;padding-top:1px;}
+.ws-answer-block{flex:1;}
+.ws-answer-q{line-height:1.6;}
+.ws-answer-line{border-bottom:1.5px solid #333;margin-top:2mm;height:6mm;}
+.ws-reading-passage{border:1.5px solid #aaa;border-radius:8px;padding:8px 12px;background:#f9f9f9;margin-bottom:3mm;font-size:10.5pt;font-family:Arial,sans-serif;line-height:1.7;}
+.ws-circle-passage{font-size:10.5pt;font-family:Arial,sans-serif;line-height:2;margin-bottom:3mm;}
+/* ANSWER KEY */
+.ws-answer-key{width:210mm;margin:20px auto 0;padding:14mm 16mm 12mm;background:white;box-shadow:0 4px 30px rgba(0,0,0,.2);font-family:'Times New Roman',serif;}
+.ws-ak-page-label{display:inline-block;background:#073B4C;color:white;font-family:Arial,sans-serif;font-size:11pt;font-weight:bold;padding:4px 14px;border-radius:6px;margin-bottom:4mm;}
+.ws-ak-lesson{font-family:Arial,sans-serif;font-size:13pt;font-weight:bold;color:#073B4C;margin-bottom:6mm;border-bottom:2px solid #073B4C;padding-bottom:3mm;}
+.ws-ak-section{margin-bottom:5mm;}
+.ws-ak-sec-title{font-family:Arial,sans-serif;font-size:10.5pt;font-weight:bold;color:#444;margin-bottom:2mm;display:flex;align-items:center;gap:6px;}
+.ws-ak-sec-num{width:22px;height:22px;background:#FFD166;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:bold;font-family:Arial;flex-shrink:0;}
+.ws-ak-grid{display:flex;flex-wrap:wrap;gap:2px 20px;font-family:Arial,sans-serif;font-size:10.5pt;line-height:2;}
+.ws-ak-item{display:flex;gap:4px;min-width:120px;}
+.ws-ak-num{font-weight:bold;min-width:22px;}
+.ws-ak-ans{color:#118AB2;font-weight:bold;}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:8000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:18px;padding:26px;width:90%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;}
+.modal h2{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;margin-bottom:14px;}
+.modal label{font-size:.8rem;font-weight:700;color:#888;display:block;margin-bottom:4px;margin-top:10px;}
+.modal input,.modal textarea,.modal select{width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:'Nunito',sans-serif;outline:none;}
+.modal input:focus,.modal textarea:focus{border-color:var(--primary);}
+.modal textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.modal-btns{display:flex;gap:10px;margin-top:14px;}
+.modal-btns button{flex:1;padding:10px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;}
+.modal-btns .confirm{background:var(--primary);color:white;}
+.modal-btns .cancel{background:#f0f0f0;color:#555;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(0,0,0,.15);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px;}
+@media(max-width:860px){
+  .lesson-cols{grid-template-columns:1fr;}
+  .lesson-col{border-right:none;border-bottom:2px solid var(--border);}
+  .lesson-col:last-child{border-bottom:none;}
+  .ws-a4,.ws-answer-key{width:100%;padding:10mm;}
+}
+@media print{
+  #ws-edit-panel{display:none!important;}
+  body>*:not(#ws-print-area){display:none!important;}
+  #ws-print-area{display:block!important;position:static;background:white;padding:0;}
+  .ws-print-close{display:none!important;}
+  .ws-a4,.ws-answer-key{box-shadow:none;margin:0;width:100%;}
+  .ws-answer-key{page-break-before:always;}
+}
+</style>
+
+<style id="student-styles">
+/* ═══ STUDENT STYLES ═══ */
+#student-app{font-family:'Nunito',sans-serif;}
+.s-screen{display:none;min-height:100vh;flex-direction:column;}
+.s-screen.active{display:flex;}
+#s-loading{align-items:center;justify-content:center;background:linear-gradient(135deg,#073B4C,#118AB2);}
+.s-loading-box{text-align:center;color:white;}
+.s-loading-box h2{font-family:'Baloo 2',cursive;font-size:1.8rem;margin-bottom:8px;}
+.s-spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;margin:20px auto;}
+#s-name{align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#FFF9F5,#FFE8D6);}
+.s-name-card{background:white;border-radius:24px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(255,107,53,.15);text-align:center;}
+.s-name-card .s-logo{font-size:3rem;margin-bottom:8px;}
+.s-name-card h2{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:#073B4C;margin-bottom:6px;}
+.s-lesson-badge{display:inline-block;background:#FFD166;color:#073B4C;font-weight:700;font-size:.85rem;padding:4px 14px;border-radius:20px;margin:8px 0 18px;}
+.s-name-input{width:100%;padding:12px 16px;border:2px solid #FFE0CC;border-radius:12px;font-size:1rem;font-family:'Nunito',sans-serif;outline:none;margin-bottom:14px;text-align:center;}
+.s-name-input:focus{border-color:#FF6B35;}
+.s-start-btn{width:100%;padding:14px;background:linear-gradient(135deg,#FF6B35,#FF8C42);color:white;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,53,.3);}
+#s-quiz{background:#FFF9F5;}
+.s-quiz-header{background:linear-gradient(135deg,#073B4C,#118AB2);color:white;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.s-quiz-header .s-stu{font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;}
+.s-quiz-header .s-les{font-size:.8rem;opacity:.8;}
+.s-prog-wrap{padding:10px 20px 0;background:white;border-bottom:2px solid #FFE0CC;}
+.s-prog-bg{height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-bottom:3px;}
+.s-prog-fill{height:100%;background:linear-gradient(90deg,#06D6A0,#04b589);border-radius:4px;transition:width .4s;}
+.s-prog-lbl{font-size:.72rem;color:#aaa;text-align:right;padding-bottom:6px;}
+.s-quiz-body{flex:1;padding:16px 20px 100px;max-width:680px;margin:0 auto;width:100%;}
+.s-section{margin-bottom:28px;}
+.s-sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.s-sec-num{width:28px;height:28px;background:#073B4C;color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13pt;font-weight:bold;font-family:'Baloo 2',cursive;flex-shrink:0;}
+.s-sec-title{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:#073B4C;}
+.s-sec-inst{font-size:.78rem;color:#888;font-style:italic;}
+.s-mcq-item{background:white;border-radius:14px;padding:14px 16px;margin-bottom:10px;border:2px solid #FFE0CC;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.s-mcq-q{font-size:.92rem;font-weight:700;color:#073B4C;margin-bottom:10px;line-height:1.5;}
+.s-opts{display:flex;flex-direction:column;gap:7px;}
+.s-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px solid #eee;border-radius:10px;cursor:pointer;transition:all .15s;font-size:.88rem;background:white;}
+.s-opt:hover{border-color:#FF6B35;background:#fff8f5;}
+.s-opt.sel{border-color:#FF6B35;background:#fff3ee;}
+.s-opt.ok{border-color:#06D6A0;background:#e8fff5;pointer-events:none;}
+.s-opt.bad{border-color:#ff4444;background:#fff0f0;pointer-events:none;}
+.s-opt.hint{border-color:#06D6A0;background:#e8fff5;pointer-events:none;}
+.s-opt-ltr{font-weight:800;min-width:24px;height:24px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0;}
+.s-opt.ok .s-opt-ltr{background:#06D6A0;border-color:#06D6A0;color:white;}
+.s-opt.bad .s-opt-ltr{background:#ff4444;border-color:#ff4444;color:white;}
+.s-opt.hint .s-opt-ltr{background:#06D6A0;border-color:#06D6A0;color:white;}
+.s-tag{font-size:.7rem;font-weight:700;margin-left:auto;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+.s-tag-ok{background:#d1fae5;color:#059669;}.s-tag-bad{background:#fee2e2;color:#dc2626;}.s-tag-hint{background:#dbeafe;color:#1d4ed8;}
+.s-passage{background:#f8f9fa;border:2px solid #ddd;border-radius:10px;padding:12px;margin-bottom:12px;font-size:.86rem;line-height:1.8;color:#073B4C;}
+.s-wordbox{display:flex;flex-wrap:wrap;gap:6px;background:#FFFBF0;border:2px solid #FFD166;border-radius:10px;padding:8px 12px;margin-bottom:10px;}
+.s-word-chip{background:white;border:1.5px solid #ddd;border-radius:6px;padding:3px 10px;font-size:.83rem;font-weight:700;}
+.s-fill-item{background:white;border:2px solid #FFE0CC;border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:.88rem;line-height:1.9;display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+.s-fill-num{font-weight:800;margin-right:2px;}
+.s-fill-inp{border:none;border-bottom:2px solid #073B4C;width:85px;font-size:.88rem;font-family:'Nunito',sans-serif;outline:none;text-align:center;background:transparent;padding:0 4px;}
+.s-fill-inp.ok{border-bottom-color:#06D6A0;color:#059669;font-weight:700;}
+.s-fill-inp.bad{border-bottom-color:#ff4444;color:#dc2626;}
+.s-unscr-item{background:white;border:2px solid #FFE0CC;border-radius:12px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.s-unscr-num{font-weight:800;min-width:20px;color:#073B4C;}
+.s-unscr-word{font-weight:700;color:#FF6B35;min-width:80px;font-size:.88rem;}
+.s-unscr-inp{flex:1;border:none;border-bottom:2px solid #073B4C;font-size:.88rem;font-family:'Nunito',sans-serif;outline:none;background:transparent;padding:0 4px;}
+.s-unscr-inp.ok{border-bottom-color:#06D6A0;color:#059669;font-weight:700;}
+.s-unscr-inp.bad{border-bottom-color:#ff4444;color:#dc2626;}
+.s-order-item{background:white;border:2px solid #FFE0CC;border-radius:12px;padding:11px 14px;margin-bottom:8px;}
+.s-order-q{font-size:.82rem;color:#888;margin-bottom:5px;}
+.s-order-inp{width:100%;border:none;border-bottom:2px solid #073B4C;font-size:.88rem;font-family:'Nunito',sans-serif;outline:none;background:transparent;padding:3px 0;}
+.s-order-inp.ok{border-bottom-color:#06D6A0;color:#059669;font-weight:700;}
+.s-order-inp.bad{border-bottom-color:#ff4444;color:#dc2626;}
+.s-answer-item{background:white;border:2px solid #FFE0CC;border-radius:12px;padding:11px 14px;margin-bottom:8px;}
+.s-answer-q{font-size:.88rem;font-weight:600;margin-bottom:7px;color:#073B4C;}
+.s-answer-inp{width:100%;border:none;border-bottom:2px solid #073B4C;font-size:.88rem;font-family:'Nunito',sans-serif;outline:none;background:transparent;padding:3px 0;}
+.s-match-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.s-match-col{display:flex;flex-direction:column;gap:5px;}
+.s-ml{background:white;border:2px solid #FFE0CC;border-radius:10px;padding:9px 12px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.s-ml:hover{border-color:#FF6B35;}
+.s-ml.sel{border-color:#FF6B35;background:#fff3ee;}
+.s-ml.ok{border-color:#06D6A0;background:#e8fff5;pointer-events:none;}
+.s-ml.bad{border-color:#ff4444;background:#fff0f0;pointer-events:none;}
+.s-mr{background:white;border:2px solid #FFE0CC;border-radius:10px;padding:9px 12px;font-size:.85rem;cursor:pointer;transition:all .15s;}
+.s-mr:hover{border-color:#118AB2;}
+.s-mr.sel{border-color:#118AB2;background:#eff8ff;}
+.s-mr.ok{border-color:#06D6A0;background:#e8fff5;pointer-events:none;}
+.s-mr.bad{border-color:#ff4444;background:#fff0f0;pointer-events:none;}
+.s-submit-wrap{position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid #FFE0CC;padding:12px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.08);}
+.s-submit-btn{width:100%;max-width:400px;display:block;margin:0 auto;padding:13px;background:linear-gradient(135deg,#06D6A0,#04b589);color:white;border:none;border-radius:14px;font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;}
+#s-result{align-items:center;justify-content:flex-start;padding:20px;background:linear-gradient(135deg,#073B4C,#118AB2);}
+.s-result-card{background:white;border-radius:24px;padding:30px 26px;width:100%;max-width:420px;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.2);text-align:center;}
+.s-res-emoji{font-size:3.5rem;margin-bottom:8px;}
+.s-res-name{font-family:'Baloo 2',cursive;color:#888;font-size:1rem;margin-bottom:4px;}
+.s-res-score{font-family:'Baloo 2',cursive;font-size:2.8rem;font-weight:800;color:#073B4C;line-height:1;}
+.s-res-out{font-size:.95rem;color:#aaa;margin-bottom:14px;}
+.s-res-bar-bg{height:14px;background:#f0f0f0;border-radius:7px;overflow:hidden;margin-bottom:18px;}
+.s-res-bar{height:100%;border-radius:7px;transition:width 1s ease;}
+.s-res-stats{display:flex;gap:10px;margin-bottom:16px;justify-content:center;}
+.s-res-stat{background:#f8f9fa;border-radius:10px;padding:10px 16px;flex:1;}
+.s-res-stat .v{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;}
+.s-res-stat .l{font-size:.72rem;color:#888;margin-top:1px;}
+.s-res-msg{font-size:.9rem;color:#555;line-height:1.6;margin-bottom:18px;}
+.s-retry-btn{width:100%;padding:11px;background:linear-gradient(135deg,#FF6B35,#FF8C42);color:white;border:none;border-radius:12px;font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.s-hint-box{background:#f0fff9;border:2px solid #06D6A0;border-radius:12px;padding:11px;font-size:.8rem;color:#059669;line-height:1.7;}
+@media(min-width:600px){.s-opts{flex-direction:row;flex-wrap:wrap;}.s-opt{flex:1;min-width:130px;}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     TEACHER APP
+═══════════════════════════════ -->
+<div id="teacher-app">
+<header>
+  <h1>📚 Kế Hoạch Dạy Học</h1>
+  <span id="date-display"></span>
+</header>
+<div class="nav-bar">
+  <button class="nav-tab active" id="nav-classes" onclick="switchPage('classes')">🏫 Lớp Học</button>
+  <button class="nav-tab" id="nav-kho" onclick="switchPage('kho')">📦 Kho Mẫu Worksheet</button>
+</div>
+<div class="page active" id="page-classes">
+  <div class="tabs-wrapper" id="tabs-wrapper">
+    <button class="add-class-btn" onclick="openAddClass()">+ Thêm lớp</button>
+  </div>
+  <div class="t-content" id="classes-content"></div>
+</div>
+<div class="page" id="page-kho">
+  <div class="t-content">
+    <div class="kho-header">
+      <div class="page-title">📦 Kho Mẫu Worksheet</div>
+      <button class="btn-primary" onclick="openAddTemplate()">+ Thêm mẫu mới</button>
+    </div>
+    <div class="kho-grid" id="kho-grid"></div>
+  </div>
+</div>
+<!-- PRINT -->
+<div id="ws-print-area">
+  <div class="ws-print-close">
+    <button class="btn-print-back" onclick="closePrint()">← Quay lại</button>
+    <button class="btn-print-go" onclick="window.print()">🖨 In / Tải PDF</button>
+  </div>
+  <div id="ws-edit-panel" style="width:210mm;margin:0 auto 14px;background:white;border-radius:12px;padding:14px 16px;box-shadow:0 2px 12px rgba(0,0,0,.12);">
+    <div style="font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:800;color:#073B4C;margin-bottom:8px;">✏️ Yêu cầu chỉnh sửa</div>
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <textarea id="ws-edit-req" placeholder="VD: Câu 5 sửa lại chỉ có 1 đáp án đúng. Đổi từ red thành blue ở câu 3." style="flex:1;padding:9px 12px;border:2px solid #FFE0CC;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;resize:vertical;min-height:56px;outline:none;line-height:1.5;"></textarea>
+      <button onclick="applyEdit()" id="ws-edit-btn" style="padding:10px 18px;background:#FF6B35;color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;align-self:center;">✨ Sửa lại</button>
+    </div>
+    <div id="ws-edit-status" style="font-size:.75rem;margin-top:5px;min-height:16px;color:#aaa;"></div>
+  </div>
+  <div class="ws-a4" id="ws-a4-content"></div>
+</div>
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-class">
+  <div class="modal">
+    <h2 id="modal-class-title">➕ Thêm Lớp Mới</h2>
+    <label>Tên lớp</label><input type="text" id="class-name-input" placeholder="VD: Lớp K1, Grade 2..."/>
+    <label>Emoji</label><input type="text" id="class-emoji-input" placeholder="VD: 🌟 🦁 🐧"/>
+    <div class="modal-btns"><button class="cancel" onclick="closeModal('modal-class')">Huỷ</button><button class="confirm" id="modal-class-ok" onclick="confirmClass()">Thêm</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-lesson">
+  <div class="modal">
+    <h2>📖 Thêm Bài Học</h2>
+    <label>Tên bài học</label><input type="text" id="lesson-name-input" placeholder="VD: Red, My Family..."/>
+    <div class="modal-btns"><button class="cancel" onclick="closeModal('modal-lesson')">Huỷ</button><button class="confirm" onclick="confirmLesson()">Thêm bài</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-template">
+  <div class="modal">
+    <h2 id="modal-tmpl-title">📋 Thêm Mẫu Worksheet</h2>
+    <label>Tên mẫu</label><input type="text" id="tmpl-name" placeholder="VD: Choose the correct answer"/>
+    <label>Emoji</label><input type="text" id="tmpl-emoji" placeholder="VD: 🔤 ✏️ 🔗"/>
+    <label>Hướng dẫn ngắn</label><input type="text" id="tmpl-inst" placeholder="VD: Circle A, B or C."/>
+    <label>Loại layout</label>
+    <select id="tmpl-type">
+      <option value="mcq">MCQ – Trắc nghiệm A/B/C</option>
+      <option value="match">Match – Nối cột</option>
+      <option value="order">Order – Sắp xếp từ thành câu</option>
+      <option value="fill">Fill – Điền từ vào chỗ trống</option>
+      <option value="unscramble">Unscramble – Sắp xếp chữ cái</option>
+      <option value="answer">Answer – Trả lời câu hỏi</option>
+      <option value="reading">Reading – Đọc hiểu + trắc nghiệm</option>
+      <option value="circle">Circle – Khoanh từ đúng</option>
+      <option value="custom">Custom – Tự mô tả</option>
+    </select>
+    <label>Mô tả thêm</label><textarea id="tmpl-desc" placeholder="Mô tả thêm nếu cần..."></textarea>
+    <div class="modal-btns"><button class="cancel" onclick="closeModal('modal-template')">Huỷ</button><button class="confirm" id="modal-tmpl-ok" onclick="confirmTemplate()">Lưu mẫu</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-link">
+  <div class="modal" style="max-width:500px;">
+    <h2>🔗 Link bài tập cho học sinh</h2>
+    <div style="background:#f0f4ff;border:2px solid #c7d2fe;border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:.72rem;font-weight:700;color:#6366f1;margin-bottom:5px;">📋 COPY LINK NÀY GỬI HỌC SINH</div>
+      <div id="student-link-display" style="font-size:.75rem;word-break:break-all;color:#1e1b4b;line-height:1.6;max-height:70px;overflow-y:auto;"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button onclick="copyStudentLink()" id="copy-link-btn" style="flex:1;padding:10px;background:#6366f1;color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;">📋 Copy link</button>
+      <button onclick="openStudentLink()" style="flex:1;padding:10px;background:#06D6A0;color:white;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;">👁 Xem thử</button>
+    </div>
+    <div style="background:#fff9f0;border:2px solid #FFE0CC;border-radius:10px;padding:10px;font-size:.77rem;color:#888;line-height:1.7;">💡 Học sinh mở link → nhập tên → làm bài → thấy điểm ngay → chụp màn hình gửi thầy/cô!</div>
+    <div class="modal-btns" style="margin-top:12px;"><button class="cancel" onclick="closeModal('modal-link')">Đóng</button></div>
+  </div>
+</div>
+</div><!-- end teacher-app -->
+
+<!-- ═══════════════════════════════
+     STUDENT APP
+═══════════════════════════════ -->
+<div id="student-app">
+  <div class="s-screen active" id="s-loading">
+    <div class="s-loading-box"><div class="s-spinner"></div><h2>✏️ English Quiz</h2><p style="opacity:.8">Đang tải bài tập...</p></div>
+  </div>
+  <div class="s-screen" id="s-name">
+    <div class="s-name-card" style="margin:auto;">
+      <div class="s-logo">✏️</div>
+      <h2>English Quiz</h2>
+      <div class="s-lesson-badge" id="s-lesson-badge">...</div>
+      <input class="s-name-input" type="text" id="s-name-input" placeholder="Nhập tên của bạn..." maxlength="40"/>
+      <button class="s-start-btn" onclick="sStartQuiz()">Bắt đầu làm bài 🚀</button>
+    </div>
+  </div>
+  <div class="s-screen" id="s-quiz">
+    <div class="s-quiz-header">
+      <div><div class="s-stu" id="s-hdr-name">Học sinh</div><div class="s-les" id="s-hdr-lesson">Bài học</div></div>
+      <div style="font-family:'Baloo 2',cursive;font-size:.88rem;opacity:.8" id="s-timer">⏱ 00:00</div>
+    </div>
+    <div class="s-prog-wrap">
+      <div class="s-prog-bg"><div class="s-prog-fill" id="s-prog-fill" style="width:0%"></div></div>
+      <div class="s-prog-lbl" id="s-prog-lbl">0 / 0</div>
+    </div>
+    <div class="s-quiz-body" id="s-quiz-body"></div>
+    <div class="s-submit-wrap"><button class="s-submit-btn" onclick="sSubmit()">📩 Nộp bài</button></div>
+  </div>
+  <div class="s-screen" id="s-result">
+    <div class="s-result-card">
+      <div class="s-res-emoji" id="s-res-emoji">🎉</div>
+      <div class="s-res-name" id="s-res-name"></div>
+      <div class="s-res-score" id="s-res-score">0</div>
+      <div class="s-res-out" id="s-res-out">/ 0 câu</div>
+      <div class="s-res-bar-bg"><div class="s-res-bar" id="s-res-bar" style="width:0%"></div></div>
+      <div class="s-res-stats">
+        <div class="s-res-stat"><div class="v" id="s-res-ok" style="color:#059669">0</div><div class="l">✅ Đúng</div></div>
+        <div class="s-res-stat"><div class="v" id="s-res-bad" style="color:#dc2626">0</div><div class="l">❌ Sai</div></div>
+        <div class="s-res-stat"><div class="v" id="s-res-time">0:00</div><div class="l">⏱ Thời gian</div></div>
+      </div>
+      <div class="s-res-msg" id="s-res-msg"></div>
+      <button class="s-retry-btn" onclick="sRetry()">🔄 Làm lại</button>
+      <div class="s-hint-box">📸 Chụp màn hình kết quả này gửi cho thầy/cô nhé!</div>
+    </div>
+  </div>
+</div><!-- end student-app -->
+
+<script>
+// ═══════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════
+const _isStudent = new URLSearchParams(window.location.search).has('student') ||
+                   new URLSearchParams(window.location.search).has('q');
+if(_isStudent){
+  document.getElementById('teacher-app').style.display='none';
+  document.getElementById('student-app').style.display='block';
+} else {
+  document.getElementById('student-app').style.display='none';
+}
+
+// ═══════════════════════════════════════
+// TEACHER LOGIC
+// ═══════════════════════════════════════
+const T_DEFAULTS=[
+  {id:'t1',emoji:'🔤',name:'Choose the correct answer',inst:'Circle A, B or C.',type:'mcq',desc:''},
+  {id:'t2',emoji:'🔗',name:'Match',inst:'Draw a line.',type:'match',desc:''},
+  {id:'t3',emoji:'🔀',name:'Put words in order',inst:'Write the sentences.',type:'order',desc:''},
+  {id:'t4',emoji:'✏️',name:'Complete the sentences',inst:'Use the words in the box.',type:'fill',desc:''},
+  {id:'t5',emoji:'🔡',name:'Unscramble the words',inst:'Write the correct words.',type:'unscramble',desc:''},
+  {id:'t6',emoji:'💬',name:'Answer the questions',inst:'Write full answers.',type:'answer',desc:''},
+  {id:'t7',emoji:'📖',name:'Read and choose the correct answer',inst:'Circle A, B or C.',type:'reading',desc:''},
+  {id:'t8',emoji:'⭕',name:'Read and circle the correct word',inst:'Circle the correct word.',type:'circle',desc:''},
+];
+let tState=JSON.parse(localStorage.getItem('ec_v1')||'null')||{classes:[],activeClass:null,templates:JSON.parse(JSON.stringify(T_DEFAULTS))};
+T_DEFAULTS.forEach(d=>{if(!tState.templates.find(t=>t.id===d.id))tState.templates.push(d);});
+let _tClassMode='add',_renameCid=null,_addLessonCid=null,_tmplMode='add',_editTmplId=null;
+let _printCid=null,_printLid=null,_studentLinkUrl='';
+function tSave(){localStorage.setItem('ec_v1',JSON.stringify(tState));}
+function uid(){return '_'+Math.random().toString(36).substr(2,9);}
+
+if(!_isStudent){
+  const days=['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+  const now=new Date();
+  document.getElementById('date-display').textContent=days[now.getDay()]+', '+now.toLocaleDateString('vi-VN');
+}
+
+function switchPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p).classList.add('active');
+  if(p==='kho')renderKho(); else renderClasses();
+}
+function renderKho(){
+  const g=document.getElementById('kho-grid');
+  if(!tState.templates.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="big">📦</div><p>Chưa có mẫu!</p></div>';return;}
+  g.innerHTML=tState.templates.map(t=>`<div class="kho-card">
+    <div class="kho-card-title">${t.emoji} ${t.name}</div>
+    <div class="kho-card-inst">${t.inst}</div>
+    <div class="kho-card-desc">Layout: <b>${t.type}</b>${t.desc?' — '+t.desc:''}</div>
+    <div class="kho-card-actions">
+      <button class="btn-sm btn-edit" onclick="openEditTemplate('${t.id}')">✏️ Sửa</button>
+      <button class="btn-sm btn-del" onclick="deleteTemplate('${t.id}')">🗑 Xoá</button>
+    </div></div>`).join('');
+}
+function openAddTemplate(){_tmplMode='add';document.getElementById('modal-tmpl-title').textContent='📋 Thêm Mẫu';document.getElementById('modal-tmpl-ok').textContent='Thêm';['tmpl-name','tmpl-emoji','tmpl-inst','tmpl-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('tmpl-type').value='mcq';document.getElementById('modal-template').classList.add('open');}
+function openEditTemplate(id){_tmplMode='edit';_editTmplId=id;const t=tState.templates.find(x=>x.id===id);document.getElementById('modal-tmpl-title').textContent='✏️ Sửa Mẫu';document.getElementById('modal-tmpl-ok').textContent='Lưu';document.getElementById('tmpl-name').value=t.name;document.getElementById('tmpl-emoji').value=t.emoji;document.getElementById('tmpl-inst').value=t.inst;document.getElementById('tmpl-type').value=t.type||'custom';document.getElementById('tmpl-desc').value=t.desc||'';document.getElementById('modal-template').classList.add('open');}
+function confirmTemplate(){const name=document.getElementById('tmpl-name').value.trim();const emoji=document.getElementById('tmpl-emoji').value.trim()||'📝';const inst=document.getElementById('tmpl-inst').value.trim();const type=document.getElementById('tmpl-type').value;const desc=document.getElementById('tmpl-desc').value.trim();if(!name)return;if(_tmplMode==='add')tState.templates.push({id:uid(),name,emoji,inst,type,desc});else{const t=tState.templates.find(x=>x.id===_editTmplId);Object.assign(t,{name,emoji,inst,type,desc});}closeModal('modal-template');tSave();renderKho();renderClasses();}
+function deleteTemplate(id){if(!confirm('Xoá mẫu này?'))return;tState.templates=tState.templates.filter(t=>t.id!==id);tSave();renderKho();renderClasses();}
+function renderClasses(){renderTabs();renderClassContent();}
+function renderTabs(){const w=document.getElementById('tabs-wrapper');const ab=w.querySelector('.add-class-btn');w.innerHTML='';tState.classes.forEach(cls=>{const b=document.createElement('button');b.className='tab-btn'+(tState.activeClass===cls.id?' active':'');b.textContent=cls.emoji+' '+cls.name;b.onclick=()=>{tState.activeClass=cls.id;tSave();renderClasses();};w.appendChild(b);});w.appendChild(ab);}
+function renderClassContent(){
+  const el=document.getElementById('classes-content');
+  if(!tState.classes.length){el.innerHTML='<div class="empty-state"><div class="big">🏫</div><p>Nhấn <b>"+ Thêm lớp"</b>!</p></div>';return;}
+  const cls=tState.classes.find(c=>c.id===tState.activeClass);if(!cls)return;
+  let h=`<div class="class-header"><div class="class-title">${cls.emoji} ${cls.name}</div><div class="header-btns"><button class="btn-outline" onclick="openRenameClass('${cls.id}')">✏️ Đổi tên</button><button class="btn-green" onclick="openAddLesson('${cls.id}')">+ Thêm bài học</button></div></div><div class="lessons-grid">`;
+  if(!cls.lessons||!cls.lessons.length)h+='<div class="empty-state"><div class="big">📖</div><p>Nhấn <b>"+ Thêm bài học"</b>!</p></div>';
+  else cls.lessons.forEach(l=>{h+=renderLessonCard(cls.id,l);});
+  h+='</div>';el.innerHTML=h;
+}
+function renderLessonCard(cid,lesson){
+  const chips=tState.templates.map(t=>`<span class="ws-chip ${(lesson.selTemplates||[]).includes(t.id)?'sel':''}" onclick="toggleTemplate('${cid}','${lesson.id}','${t.id}')">${t.emoji} ${t.name}</span>`).join('');
+  const wsStatus=lesson.wsReady?'<div class="ws-status ready">✅ Worksheet sẵn sàng</div>':'<div class="ws-status">Chọn dạng bài rồi nhấn "✨ Tạo"!</div>';
+  const hwSec=lesson.hwMsg?`<div class="hw-msg-box">${lesson.hwMsg}</div><button class="copy-btn" id="copybtn-${lesson.id}" onclick="copyHW('${lesson.id}','${cid}')">📋 Copy gửi phụ huynh</button>`:'';
+  return `<div class="lesson-card" id="card-${lesson.id}">
+  <div class="lesson-card-header"><div class="lname">📚 ${lesson.name}</div><button class="del-btn" onclick="deleteLesson('${cid}','${lesson.id}')">🗑</button></div>
+  <div class="lesson-cols">
+    <div class="lesson-col">
+      <div class="col-title">📋 Nội dung bài học</div>
+      <textarea class="content-input" id="tc-${lesson.id}" placeholder="Nhập từ vựng, câu mẫu, lời bài hát..." onchange="updateField('${cid}','${lesson.id}','lessonContent',this.value)">${lesson.lessonContent||''}</textarea>
+      <div class="hint">💡 Càng chi tiết → worksheet càng chuẩn</div>
+    </div>
+    <div class="lesson-col">
+      <div class="col-title">📝 Worksheet</div>
+      <div class="ws-types-label">Chọn dạng bài</div>
+      <div class="ws-types-grid">${chips}</div>
+      ${wsStatus}
+      <div class="ws-actions">
+        <button class="ws-gen-btn" onclick="generateWorksheet('${cid}','${lesson.id}')">✨ Tạo Worksheet</button>
+        <button class="ws-dl-btn" onclick="printWorksheet('${cid}','${lesson.id}')">⬇ In/PDF</button>
+      </div>
+      <button class="ws-link-btn" onclick="generateStudentLink('${cid}','${lesson.id}')">🔗 Tạo link cho học sinh</button>
+    </div>
+    <div class="lesson-col">
+      <div class="col-title">💬 Tin nhắn phụ huynh</div>
+      <div class="hw-label">Link video</div>
+      <input class="hw-input" type="text" id="hwl-${lesson.id}" placeholder="Dán link YouTube..." value="${lesson.hwLink||''}" onchange="updateField('${cid}','${lesson.id}','hwLink',this.value)"/>
+      <div class="hw-label">Yêu cầu bài tập</div>
+      <textarea class="hw-req" id="hwr-${lesson.id}" placeholder="VD: Shadowing, quay video, viết bài..." onchange="updateField('${cid}','${lesson.id}','hwReq',this.value)">${lesson.hwReq||''}</textarea>
+      <button class="hw-gen-btn" onclick="generateHW('${cid}','${lesson.id}')">✨ Viết tin nhắn cho phụ huynh</button>
+      ${hwSec}
+    </div>
+  </div></div>`;
+}
+function updateField(cid,lid,f,v){getLesson(cid,lid)[f]=v;tSave();}
+function toggleTemplate(cid,lid,tid){const l=getLesson(cid,lid);if(!l.selTemplates)l.selTemplates=[];if(l.selTemplates.includes(tid))l.selTemplates=l.selTemplates.filter(t=>t!==tid);else l.selTemplates.push(tid);tSave();renderClasses();}
+function getLesson(cid,lid){return tState.classes.find(c=>c.id===cid).lessons.find(l=>l.id===lid);}
+function deleteLesson(cid,lid){if(!confirm('Xoá bài?'))return;const c=tState.classes.find(x=>x.id===cid);c.lessons=c.lessons.filter(l=>l.id!==lid);tSave();renderClasses();}
+function copyHW(lid,cid){const l=getLesson(cid,lid);navigator.clipboard.writeText(l.hwMsg||'').then(()=>{const b=document.getElementById('copybtn-'+lid);b.textContent='✅ Đã copy!';b.classList.add('copied');setTimeout(()=>{b.textContent='📋 Copy gửi phụ huynh';b.classList.remove('copied');},2000);});}
+
+async function generateWorksheet(cid,lid){
+  const lesson=getLesson(cid,lid);const content=lesson.lessonContent||'';
+  const sel=(lesson.selTemplates||[]).map(id=>tState.templates.find(t=>t.id===id)).filter(Boolean);
+  if(!content.trim()){alert('Nhập nội dung bài học trước!');return;}
+  if(!sel.length){alert('Chọn ít nhất 1 dạng bài!');return;}
+  const statusEl=document.querySelector(`#card-${lid} .ws-status`);
+  statusEl.innerHTML='<span class="spinner"></span> Đang tạo...';statusEl.classList.remove('ready');
+  const typeInst={mcq:'mảng items:[{q,blank?,options:[],answer:index}]',match:'{left:[],right:[],pairs:[]}',order:'mảng items:[{q:"từ/xáo/trộn",answer:"câu đúng"}]',fill:'{wordbox:[],items:["câu với ___"],answers:[]}',unscramble:'mảng items:[{scrambled,answer}]',answer:'mảng items:[{q,answer}]',reading:'{passage,items:[{q,options:[],answer:index}]}',circle:'{passage:"...có (1)từA/từB...",answers:[]}',custom:'{content:""}'};
+  const sp=sel.map((t,i)=>`Phần ${i+1}: ${t.name} (type:"${t.type||'custom'}") — inst:"${t.inst}" — data format: ${typeInst[t.type||'custom']}`).join('\n');
+  const prompt=`Giáo viên tiếng Anh tiểu học. Tạo worksheet.\nBài: ${lesson.name}\nNội dung: ${content}\nCác phần:\n${sp}\nTrả về JSON: {"sections":[{"type","title","inst","data"}]}\nLưu ý: options KHÔNG có tiền tố A./B./C.; mỗi phần 5-6 câu; CHỈ JSON thuần.\nĐáp án: mcq/reading answer=index(0,1,2); match pairs=[]; fill answers=[]; unscramble/order answer="..."; circle answers=[]`;
+  const apiKey=getApiKey();
+  if(!apiKey){statusEl.innerHTML='❌ Chưa nhập API key!';document.getElementById('api-key-bar').style.display='flex';return;}
+  try{
+    const text=await callGemini(prompt,apiKey);
+    if(!text){statusEl.innerHTML='❌ API không trả về nội dung!';return;}
+    const jsonMatch=text.match(/\{[\s\S]*\}/);
+    if(!jsonMatch){statusEl.innerHTML='❌ Không tìm thấy JSON!';console.error('No JSON:',text);return;}
+    let parsed;
+    try{parsed=JSON.parse(jsonMatch[0]);}
+    catch(pe){const cl=jsonMatch[0].replace(/[\x00-\x1F\x7F]/g,' ').replace(/,\s*([}\]])/g,'$1');try{parsed=JSON.parse(cl);}catch(e2){statusEl.innerHTML='❌ JSON lỗi. Thử lại!';return;}}
+    if(!parsed.sections||!Array.isArray(parsed.sections)){statusEl.innerHTML='❌ Dữ liệu không hợp lệ. Thử lại!';return;}
+    lesson.wsData=parsed;lesson.wsReady=true;tSave();renderClasses();
+  }catch(e){statusEl.innerHTML='❌ Lỗi: '+e.message;console.error(e);}
+}
+
+function printWorksheet(cid,lid,keepOpen){
+  const cls=tState.classes.find(c=>c.id===cid);const lesson=getLesson(cid,lid);
+  if(!lesson||!lesson.wsData){alert('Chưa có worksheet!');return;}
+  _printCid=cid;_printLid=lid;
+  const sections=lesson.wsData.sections||[];
+  let wh=`<div class="ws-top-bar"><div class="ws-lesson-name">📚 ${lesson.name}</div><div class="ws-class-name">${cls.emoji} ${cls.name}</div></div>
+  <div class="ws-info-row"><div class="ws-info-field"><span>Họ và tên:</span></div><div class="ws-info-field"><span>Ngày:</span></div><div class="ws-info-field"><span>Điểm:</span></div></div>`;
+  sections.forEach((sec,idx)=>{
+    wh+=`<div class="ws-section"><div class="ws-section-header"><div class="ws-section-num">${idx+1}</div><div><div class="ws-section-title">${sec.title||''}</div><div class="ws-section-inst">(${sec.inst||''})</div></div></div>${renderWSSection(sec)}</div>`;
+  });
+  document.getElementById('ws-a4-content').innerHTML=wh;
+  const oldAK=document.getElementById('ws-ak-page');if(oldAK)oldAK.remove();
+  const akDiv=document.createElement('div');akDiv.id='ws-ak-page';akDiv.innerHTML=buildAK(sections,lesson.name,cls.emoji+' '+cls.name);
+  document.getElementById('ws-print-area').appendChild(akDiv);
+  if(!keepOpen)document.getElementById('ws-print-area').style.display='block';
+}
+function renderWSSection(sec){
+  const d=sec.data||{};
+  switch(sec.type){
+    case 'mcq':{const items=Array.isArray(d)?d:(d.items||[]);return items.map((item,i)=>`<div class="ws-mcq-item"><div class="ws-mcq-q"><span class="qnum">${i+1}.</span>${item.q||''}${item.blank?'<span class="ws-mcq-blank"></span>':''}</div><div class="ws-mcq-options">${(item.options||[]).map((o,oi)=>`<div class="ws-opt"><span class="ws-opt-letter">${String.fromCharCode(65+oi)}.</span><span>${o.replace(/^[A-Ca-c][.\)]\s*/,'')}</span></div>`).join('')}</div></div>`).join('');}
+    case 'match':{const left=d.left||[];const right=d.right||[];const ml=Math.max(left.length,right.length);let rows='';for(let i=0;i<ml;i++){rows+=`<tr><td style="padding:3px 6px;font-size:10.5pt;font-family:Arial">${left[i]?`<div style="display:flex;align-items:center;gap:6px"><span style="font-weight:bold;min-width:18px">${i+1}.</span><div style="border:1.5px solid #aaa;border-radius:6px;padding:4px 10px;background:#f0f8e8;flex:1">${left[i]}</div><span style="font-size:8pt">●</span></div>`:''}</td><td style="padding:3px 6px;font-size:10.5pt;font-family:Arial">${right[i]?`<div style="display:flex;align-items:center;gap:6px"><span style="font-size:8pt">●</span><div style="border:1.5px solid #aaa;border-radius:6px;padding:4px 10px;background:#fafff0;flex:1">${right[i]}</div><span style="color:#888;min-width:16px">${String.fromCharCode(96+i+1)}.</span></div>`:''}</td></tr>`;}return `<table style="width:100%;border-collapse:separate;border-spacing:0 3px">${rows}</table>`;}
+    case 'order':{const items=Array.isArray(d)?d:(d.items||[]);return items.map((item,i)=>`<div class="ws-order-item"><div class="ws-order-q"><b>${i+1}.</b> ${item.q||item}</div><div class="ws-order-line"></div></div>`).join('');}
+    case 'fill':{const words=d.wordbox||[];const items=d.items||[];const wb=words.length?`<div class="ws-wordbox">${words.map(w=>`<span class="ws-wordbox-item">${w}</span>`).join('')}</div>`:'';return wb+items.map((item,i)=>{const parts=(item||'').split('___');let line=`<div class="ws-fill-item"><span class="ws-fill-num">${i+1}.</span>`;parts.forEach((p,pi)=>{line+=`<span>${p}</span>`;if(pi<parts.length-1)line+=`<span class="ws-fill-blank"></span>`;});return line+`</div>`;}).join('');}
+    case 'unscramble':{const items=Array.isArray(d)?d:(d.items||[]);return items.map((item,i)=>`<div class="ws-unscramble-item"><span class="ws-unscramble-num">${i+1}.</span><span class="ws-unscramble-word">${item.scrambled||item}</span><span class="ws-unscramble-arrow">→</span><span class="ws-unscramble-line"></span></div>`).join('');}
+    case 'answer':{const items=Array.isArray(d)?d:(d.items||[]);return items.map((item,i)=>`<div class="ws-answer-item"><span class="ws-answer-num">${i+1}.</span><div class="ws-answer-block"><div class="ws-answer-q">${item.q||item}</div><div class="ws-answer-line"></div></div></div>`).join('');}
+    case 'reading':{return `<div class="ws-reading-passage">${d.passage||''}</div>`+(d.items||[]).map((item,i)=>`<div class="ws-mcq-item"><div class="ws-mcq-q"><span class="qnum">${i+1}.</span>${item.q||''}</div><div class="ws-mcq-options">${(item.options||[]).map((o,oi)=>`<div class="ws-opt"><span class="ws-opt-letter">${String.fromCharCode(65+oi)}.</span><span>${o.replace(/^[A-Ca-c][.\)]\s*/,'')}</span></div>`).join('')}</div></div>`).join('');}
+    default:{return `<div style="font-size:10.5pt;font-family:Arial;line-height:2;white-space:pre-wrap">${d.content||d.passage||''}</div>`;}
+  }
+}
+function buildAK(sections,lname,cname){
+  let h=`<div class="ws-answer-key"><div class="ws-ak-page-label">🔑 ANSWER KEY</div><div class="ws-ak-lesson">📚 ${lname} — ${cname}</div>`;
+  sections.forEach((sec,idx)=>{
+    const d=sec.data||{};let ans=[];
+    switch(sec.type){
+      case 'mcq':{const items=Array.isArray(d)?d:(d.items||[]);items.forEach((item,i)=>{const a=item.answer;ans.push({n:i+1,a:a!==undefined?String.fromCharCode(65+a):'—'});});break;}
+      case 'match':{const left=d.left||[];const right=d.right||[];const pairs=d.pairs||[];left.forEach((l,i)=>ans.push({n:i+1,a:pairs[i]||right[i]||'—'}));break;}
+      case 'order':{const items=Array.isArray(d)?d:(d.items||[]);items.forEach((item,i)=>ans.push({n:i+1,a:(item.answer||item.q||item).replace(/\s*\/\s*/g,' ').trim()}));break;}
+      case 'fill':{const items=d.items||[];const aa=d.answers||[];items.forEach((_,i)=>ans.push({n:i+1,a:aa[i]||'—'}));break;}
+      case 'unscramble':{const items=Array.isArray(d)?d:(d.items||[]);items.forEach((item,i)=>ans.push({n:i+1,a:item.answer||item}));break;}
+      case 'reading':{const items=d.items||[];items.forEach((item,i)=>{const a=item.answer;ans.push({n:i+1,a:a!==undefined?String.fromCharCode(65+a):'—'});});break;}
+      case 'answer':{const items=Array.isArray(d)?d:(d.items||[]);items.forEach((item,i)=>ans.push({n:i+1,a:item.answer||'(sample)'}));break;}
+      case 'circle':{const aa=d.answers||[];aa.forEach((a,i)=>ans.push({n:i+1,a}));break;}
+    }
+    if(!ans.length)return;
+    h+=`<div class="ws-ak-section"><div class="ws-ak-sec-title"><div class="ws-ak-sec-num">${idx+1}</div>${sec.title||''}</div><div class="ws-ak-grid">${ans.map(a=>`<div class="ws-ak-item"><span class="ws-ak-num">${a.n}.</span><span class="ws-ak-ans">${a.a}</span></div>`).join('')}</div></div>`;
+  });
+  return h+'</div>';
+}
+function closePrint(){document.getElementById('ws-print-area').style.display='none';_printCid=null;_printLid=null;}
+async function applyEdit(){
+  const req=document.getElementById('ws-edit-req').value.trim();if(!req){alert('Nhập yêu cầu chỉnh sửa!');return;}
+  if(!_printCid||!_printLid)return;
+  const lesson=getLesson(_printCid,_printLid);if(!lesson||!lesson.wsData)return;
+  const btn=document.getElementById('ws-edit-btn');const st=document.getElementById('ws-edit-status');
+  btn.innerHTML='<span class="spinner"></span> Đang sửa...';btn.disabled=true;st.textContent='';
+  const prompt='Chỉnh sửa worksheet JSON theo yêu cầu: '+req+'\nJSON hiện tại: '+JSON.stringify(lesson.wsData)+'\nTrả về JSON đã sửa, CHỈ JSON thuần.';
+  try{
+    const text=await callGemini(prompt,getApiKey());
+    const jm=text.match(/\{[\s\S]*\}/);if(!jm){throw new Error('No JSON found');}
+    let parsed;try{parsed=JSON.parse(jm[0]);}catch(pe){const cl=jm[0].replace(/,\s*([}\]])/g,'$1');parsed=JSON.parse(cl);}
+    lesson.wsData=parsed;tSave();
+    printWorksheet(_printCid,_printLid,true);document.getElementById('ws-edit-req').value='';
+    st.style.color='#059669';st.textContent='✅ Đã sửa xong!';setTimeout(()=>{st.textContent='';},3000);
+  }catch(e){st.style.color='#e55a27';st.textContent='❌ Lỗi. Thử lại!';}
+  btn.innerHTML='✨ Sửa lại';btn.disabled=false;
+}
+async function generateHW(cid,lid){
+  const lesson=getLesson(cid,lid);
+  const link=document.getElementById('hwl-'+lid).value.trim()||lesson.hwLink||'';
+  const req=document.getElementById('hwr-'+lid).value.trim()||lesson.hwReq||'';
+  if(!req.trim()){alert('Nhập yêu cầu bài tập trước!');return;}
+  lesson.hwLink=link;lesson.hwReq=req;tSave();
+  const gb=document.querySelector(`#card-${lid} .hw-gen-btn`);gb.innerHTML='<span class="spinner"></span> Đang viết...';gb.disabled=true;
+  const prompt=`Giáo viên tiếng Anh. Viết tin nhắn phụ huynh.\nBài: ${lesson.name}\nLink: ${link||'(không có)'}\nYêu cầu: ${req}\nViết tiếng Việt, thân thiện, có B1/B2... Chỉ trả về nội dung tin nhắn.`;
+  try{
+    const text=await callGemini(prompt,getApiKey());lesson.hwMsg=text||'';tSave();renderClasses();
+  }catch(e){gb.innerHTML='✨ Viết tin nhắn cho phụ huynh';gb.disabled=false;alert('Lỗi!');}
+}
+function generateStudentLink(cid,lid){
+  const lesson=getLesson(cid,lid);
+  if(!lesson||!lesson.wsData){alert('Chưa có worksheet! Tạo worksheet trước nhé.');return;}
+  const qd={lessonName:lesson.name,sections:lesson.wsData.sections||[]};
+  const encoded=btoa(encodeURIComponent(JSON.stringify(qd)));
+  const base=window.location.href.split('?')[0].split('#')[0];
+  _studentLinkUrl=base+'?student&q='+encoded;
+  document.getElementById('student-link-display').textContent=_studentLinkUrl;
+  document.getElementById('modal-link').classList.add('open');
+}
+function copyStudentLink(){navigator.clipboard.writeText(_studentLinkUrl).then(()=>{const b=document.getElementById('copy-link-btn');b.textContent='✅ Đã copy!';setTimeout(()=>{b.textContent='📋 Copy link';},2000);});}
+function openStudentLink(){window.open(_studentLinkUrl,'_blank');}
+function openAddClass(){_tClassMode='add';document.getElementById('modal-class-title').textContent='➕ Thêm Lớp Mới';document.getElementById('modal-class-ok').textContent='Thêm';document.getElementById('class-name-input').value='';document.getElementById('class-emoji-input').value='';document.getElementById('modal-class').classList.add('open');}
+function openRenameClass(id){_tClassMode='rename';_renameCid=id;const c=tState.classes.find(x=>x.id===id);document.getElementById('modal-class-title').textContent='✏️ Đổi Tên';document.getElementById('modal-class-ok').textContent='Lưu';document.getElementById('class-name-input').value=c.name;document.getElementById('class-emoji-input').value=c.emoji;document.getElementById('modal-class').classList.add('open');}
+function confirmClass(){const name=document.getElementById('class-name-input').value.trim();const emoji=document.getElementById('class-emoji-input').value.trim()||'📚';if(!name)return;if(_tClassMode==='add'){const id=uid();tState.classes.push({id,name,emoji,lessons:[]});tState.activeClass=id;}else{const c=tState.classes.find(x=>x.id===_renameCid);c.name=name;c.emoji=emoji;}closeModal('modal-class');tSave();renderClasses();}
+function openAddLesson(cid){_addLessonCid=cid;document.getElementById('lesson-name-input').value='';document.getElementById('modal-lesson').classList.add('open');}
+function confirmLesson(){const name=document.getElementById('lesson-name-input').value.trim();if(!name)return;const c=tState.classes.find(x=>x.id===_addLessonCid);c.lessons.push({id:uid(),name,lessonContent:'',selTemplates:[],wsData:null,wsReady:false,hwLink:'',hwReq:'',hwMsg:''});closeModal('modal-lesson');tSave();renderClasses();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+if(!_isStudent)renderClasses();
+
+// ═══════════════════════════════════════
+// STUDENT LOGIC
+// ═══════════════════════════════════════
+let sQuizData=null,sStuName='',sAnswers={},sMatchState={},sTotalQ=0,sStartTime=null,sTimerInt=null;
+
+function sShowScreen(id){document.querySelectorAll('.s-screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function loadQuiz(){
+  const params=new URLSearchParams(window.location.search);
+  const encoded=params.get('q');
+  if(encoded){
+    try{sQuizData=JSON.parse(decodeURIComponent(atob(encoded)));}
+    catch(e){sQuizData=sDemoQuiz();}
+  } else {sQuizData=sDemoQuiz();}
+  setTimeout(()=>{document.getElementById('s-lesson-badge').textContent='📚 '+sQuizData.lessonName;sShowScreen('s-name');},700);
+}
+
+function sDemoQuiz(){return {lessonName:'Demo',sections:[{type:'mcq',title:'Choose the correct answer',inst:'Circle A, B or C.',data:{items:[{q:'What color is the sky?',options:['Red','Blue','Green'],answer:1}]}}]};}
+
+function sStartQuiz(){
+  const name=document.getElementById('s-name-input').value.trim();
+  if(!name){alert('Bạn chưa nhập tên!');return;}
+  sStuName=name;sAnswers={};sMatchState={};
+  document.getElementById('s-hdr-name').textContent='👤 '+name;
+  document.getElementById('s-hdr-lesson').textContent='📚 '+sQuizData.lessonName;
+  sBuildQuiz();sShowScreen('s-quiz');
+  sStartTime=Date.now();sTimerInt=setInterval(sUpdateTimer,1000);
+}
+function sUpdateTimer(){const sec=Math.floor((Date.now()-sStartTime)/1000);document.getElementById('s-timer').textContent='⏱ '+String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');}
+
+function sBuildQuiz(){
+  const body=document.getElementById('s-quiz-body');sTotalQ=0;let html='';
+  sQuizData.sections.forEach((sec,si)=>{
+    html+=`<div class="s-section"><div class="s-sec-hdr"><div class="s-sec-num">${si+1}</div><div><div class="s-sec-title">${sec.title||''}</div><div class="s-sec-inst">${sec.inst||''}</div></div></div>`;
+    html+=sBuildSection(sec,si);html+='</div>';
+  });
+  body.innerHTML=html;sUpdateProg();
+}
+
+function sBuildSection(sec,si){
+  const d=sec.data||{};
+  switch(sec.type){
+    case 'mcq': return sBuildMCQ(d,si);
+    case 'reading': return sBuildReading(d,si);
+    case 'match': return sBuildMatch(d,si);
+    case 'fill': return sBuildFill(d,si);
+    case 'unscramble': return sBuildUnscr(d,si);
+    case 'order': return sBuildOrder(d,si);
+    case 'answer': return sBuildAnswer(d,si);
+    default: return `<div style="background:white;border-radius:12px;padding:14px;border:2px solid #FFE0CC;font-size:.88rem;color:#888">Dạng bài này xem trên giấy nhé!</div>`;
+  }
+}
+function sBuildMCQ(d,si){
+  const items=Array.isArray(d)?d:(d.items||[]);sTotalQ+=items.length;
+  return items.map((item,ii)=>`<div class="s-mcq-item"><div class="s-mcq-q">${ii+1}. ${item.q||''}</div><div class="s-opts">${(item.options||[]).map((o,oi)=>`<div class="s-opt" id="so-${si}-${ii}-${oi}" onclick="sSelectMCQ(${si},${ii},${oi},${item.answer??-1})"><div class="s-opt-ltr">${String.fromCharCode(65+oi)}</div><span>${o.replace(/^[A-Ca-c][.\)]\s*/,'')}</span></div>`).join('')}</div></div>`).join('');
+}
+function sBuildReading(d,si){
+  let h=`<div class="s-passage">${d.passage||''}</div>`;
+  const items=d.items||[];sTotalQ+=items.length;
+  h+=items.map((item,ii)=>`<div class="s-mcq-item"><div class="s-mcq-q">${ii+1}. ${item.q||''}</div><div class="s-opts">${(item.options||[]).map((o,oi)=>`<div class="s-opt" id="so-${si}-${ii}-${oi}" onclick="sSelectMCQ(${si},${ii},${oi},${item.answer??-1})"><div class="s-opt-ltr">${String.fromCharCode(65+oi)}</div><span>${o.replace(/^[A-Ca-c][.\)]\s*/,'')}</span></div>`).join('')}</div></div>`).join('');
+  return h;
+}
+function sBuildMatch(d,si){
+  const left=d.left||[];const right=d.right||[];sTotalQ+=left.length;
+  sMatchState[si]={selLeft:null,pairs:{}};
+  return `<div class="s-match-grid"><div class="s-match-col">${left.map((l,i)=>`<div class="s-ml" id="sml-${si}-${i}" onclick="sSelMatchLeft(${si},${i})"><span style="font-weight:800;color:#FF6B35;min-width:18px">${i+1}.</span>${l}</div>`).join('')}</div><div class="s-match-col">${right.map((r,i)=>`<div class="s-mr" id="smr-${si}-${i}" onclick="sSelMatchRight(${si},${i},'${r.replace(/'/g,"\\'")}')"><span style="color:#888;min-width:18px">${String.fromCharCode(97+i)}.</span>${r}</div>`).join('')}</div></div>`;
+}
+function sBuildFill(d,si){
+  const words=d.wordbox||[];const items=d.items||[];const aa=d.answers||[];sTotalQ+=items.length;
+  const wb=words.length?`<div class="s-wordbox">${words.map(w=>`<span class="s-word-chip">${w}</span>`).join('')}</div>`:'';
+  return wb+items.map((item,ii)=>{const parts=(item||'').split('___');let line=`<div class="s-fill-item"><span class="s-fill-num">${ii+1}.</span>`;parts.forEach((p,pi)=>{line+=`<span>${p}</span>`;if(pi<parts.length-1)line+=`<input class="s-fill-inp" id="sfi-${si}-${ii}" data-ans="${(aa[ii]||'').toLowerCase()}" oninput="sUpdateProg()" placeholder="..."/>`;});return line+'</div>';}).join('');
+}
+function sBuildUnscr(d,si){
+  const items=Array.isArray(d)?d:(d.items||[]);sTotalQ+=items.length;
+  return items.map((item,ii)=>`<div class="s-unscr-item"><span class="s-unscr-num">${ii+1}.</span><span class="s-unscr-word">${item.scrambled||item}</span><span style="color:#aaa">→</span><input class="s-unscr-inp" id="sui-${si}-${ii}" data-ans="${(item.answer||'').toLowerCase()}" oninput="sUpdateProg()" placeholder="..."/></div>`).join('');
+}
+function sBuildOrder(d,si){
+  const items=Array.isArray(d)?d:(d.items||[]);sTotalQ+=items.length;
+  return items.map((item,ii)=>{const q=item.q||item;const ans=(item.answer||q).replace(/\s*\/\s*/g,' ').trim();return `<div class="s-order-item"><div class="s-order-q">🔀 ${q}</div><input class="s-order-inp" id="soi-${si}-${ii}" data-ans="${ans.toLowerCase()}" oninput="sUpdateProg()" placeholder="Viết câu đúng..."/></div>`;}).join('');
+}
+function sBuildAnswer(d,si){
+  const items=Array.isArray(d)?d:(d.items||[]);sTotalQ+=items.length;
+  return items.map((item,ii)=>`<div class="s-answer-item"><div class="s-answer-q">${ii+1}. ${item.q||item}</div><input class="s-answer-inp" id="sai-${si}-${ii}" oninput="sUpdateProg()" placeholder="Viết câu trả lời..."/></div>`).join('');
+}
+
+function sSelectMCQ(si,ii,oi,correct){
+  const opts=document.querySelectorAll(`[id^="so-${si}-${ii}-"]`);
+  opts.forEach((el,idx)=>{
+    el.classList.remove('sel','ok','bad','hint');el.style.pointerEvents='none';
+    if(idx===oi){el.classList.add(correct===-1?'sel':idx===correct?'ok':'bad');if(idx!==correct&&correct!==-1)el.innerHTML+=`<span class="s-tag s-tag-bad">❌</span>`;else if(correct!==-1)el.innerHTML+=`<span class="s-tag s-tag-ok">✅</span>`;}
+    else if(idx===correct&&correct!==-1){el.classList.add('hint');el.innerHTML+=`<span class="s-tag s-tag-hint">💡</span>`;}
+  });
+  sAnswers[si+'_'+ii]=oi;sUpdateProg();
+}
+function sSelMatchLeft(si,ii){
+  const ms=sMatchState[si];if(ms.pairs[ii]!==undefined)return;
+  if(ms.selLeft!==null)document.getElementById(`sml-${si}-${ms.selLeft}`)?.classList.remove('sel');
+  ms.selLeft=ii;document.getElementById(`sml-${si}-${ii}`).classList.add('sel');
+}
+function sSelMatchRight(si,ri,val){
+  const ms=sMatchState[si];if(ms.selLeft===null)return;
+  const li=ms.selLeft;const d=sQuizData.sections[si].data;const pairs=d.pairs||[];
+  const isOk=pairs.length?val===pairs[li]:true;
+  ms.pairs[li]={ri,val,ok:isOk};ms.selLeft=null;
+  document.getElementById(`sml-${si}-${li}`).classList.remove('sel');
+  document.getElementById(`sml-${si}-${li}`).classList.add(isOk?'ok':'bad');
+  document.getElementById(`smr-${si}-${ri}`).classList.add(isOk?'ok':'bad');
+  sAnswers[si+'_'+li]=isOk?1:0;sUpdateProg();
+}
+function sUpdateProg(){
+  const textFilled=[...document.querySelectorAll('.s-fill-inp,.s-unscr-inp,.s-order-inp,.s-answer-inp')].filter(e=>e.value.trim()).length;
+  const total=sTotalQ||1;const filled=Object.keys(sAnswers).length+textFilled;
+  const pct=Math.min(100,Math.round(filled/total*100));
+  document.getElementById('s-prog-fill').style.width=pct+'%';
+  document.getElementById('s-prog-lbl').textContent=filled+' / '+total+' câu';
+}
+function sSubmit(){
+  clearInterval(sTimerInt);const elapsed=Math.floor((Date.now()-sStartTime)/1000);
+  document.querySelectorAll('.s-fill-inp,.s-unscr-inp,.s-order-inp').forEach(inp=>{
+    const uv=inp.value.trim().toLowerCase();const cv=(inp.dataset.ans||'').toLowerCase().trim();
+    inp.readOnly=true;if(uv&&cv)inp.classList.add(uv===cv?'ok':'bad');
+  });
+  let ok=0,bad=0,total=0;
+  sQuizData.sections.forEach((sec,si)=>{
+    const d=sec.data||{};
+    if(['mcq','reading'].includes(sec.type)){
+      const items=Array.isArray(d)?d:(d.items||[]);
+      items.forEach((item,ii)=>{total++;const sel=sAnswers[si+'_'+ii];if(sel!==undefined){if(item.answer!==undefined){if(sel===item.answer)ok++;else bad++;}else ok++;}});
+    } else if(sec.type==='match'){
+      (d.left||[]).forEach((_,ii)=>{total++;const r=sAnswers[si+'_'+ii];if(r===1)ok++;else if(r===0)bad++;});
+    } else if(['fill','unscramble','order'].includes(sec.type)){
+      const pfx=sec.type==='fill'?'sfi':sec.type==='unscramble'?'sui':'soi';
+      document.querySelectorAll(`[id^="${pfx}-${si}-"]`).forEach(inp=>{total++;const uv=inp.value.trim().toLowerCase();const cv=(inp.dataset.ans||'').toLowerCase().trim();if(uv&&cv){if(uv===cv)ok++;else bad++;}});
+    } else if(sec.type==='answer'){
+      const items=Array.isArray(d)?d:(d.items||[]);
+      items.forEach((_,ii)=>{total++;const inp=document.getElementById(`sai-${si}-${ii}`);if(inp&&inp.value.trim())ok++;});
+    }
+  });
+  const pct=total>0?Math.round(ok/total*100):0;
+  const emoji=pct>=90?'🏆':pct>=70?'⭐':pct>=50?'👍':'💪';
+  const msg=pct>=90?'Xuất sắc! Bạn làm rất tốt! 🎉':pct>=70?'Tốt lắm! Cố gắng hơn nữa nhé! 😊':pct>=50?'Cố gắng hơn lần sau nhé! 💪':'Ôn tập thêm và thử lại nhé! 🌟';
+  const mm=String(Math.floor(elapsed/60)).padStart(2,'0');const ss=String(elapsed%60).padStart(2,'0');
+  document.getElementById('s-res-emoji').textContent=emoji;
+  document.getElementById('s-res-name').textContent='👤 '+sStuName;
+  document.getElementById('s-res-score').textContent=ok;
+  document.getElementById('s-res-out').textContent='/ '+total+' câu đúng';
+  document.getElementById('s-res-ok').textContent=ok;
+  document.getElementById('s-res-bad').textContent=bad;
+  document.getElementById('s-res-time').textContent=mm+':'+ss;
+  document.getElementById('s-res-msg').textContent=msg;
+  const bar=document.getElementById('s-res-bar');
+  bar.style.background=pct>=70?'linear-gradient(90deg,#06D6A0,#04b589)':'linear-gradient(90deg,#FFD166,#FF6B35)';
+  bar.style.width='0%';setTimeout(()=>{bar.style.width=pct+'%';},100);
+  sShowScreen('s-result');window.scrollTo(0,0);
+}
+function sRetry(){sAnswers={};sMatchState={};sBuildQuiz();sShowScreen('s-quiz');sStartTime=Date.now();clearInterval(sTimerInt);sTimerInt=setInterval(sUpdateTimer,1000);}
+
+if(_isStudent)loadQuiz();
+</script>
+
+<!-- API KEY SETUP -->
+<div id="api-key-bar" style="position:fixed;bottom:0;left:0;right:0;background:#073B4C;color:white;padding:10px 20px;display:flex;align-items:center;gap:12px;z-index:99999;font-family:'Nunito',sans-serif;font-size:.85rem;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
+  <span style="white-space:nowrap;font-weight:700;">🔑 Google Gemini API Key:</span>
+  <input type="password" id="api-key-input" placeholder="AIza..." 
+    style="flex:1;max-width:380px;padding:7px 12px;border-radius:8px;border:none;font-size:.85rem;font-family:'Nunito',sans-serif;outline:none;" />
+  <button onclick="saveApiKey()" style="padding:7px 16px;background:#06D6A0;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;">Lưu</button>
+  <button onclick="document.getElementById('api-key-bar').style.display='none'" style="padding:7px 12px;background:rgba(255,255,255,.15);color:white;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">✕</button>
+  <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#FFD166;font-size:.78rem;white-space:nowrap;text-decoration:none;">📎 Lấy API key miễn phí tại AI Studio</a>
+</div>
+
+<script>
+async function callGemini(prompt, apiKey){
+  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:3000}})
+  });
+  if(!res.ok){const err=await res.text();throw new Error('Gemini lỗi '+res.status+': '+err);}
+  const data=await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+function getApiKey(){
+  return localStorage.getItem('gemini_api_key')||'';
+}
+function saveApiKey(){
+  const key=document.getElementById('api-key-input').value.trim();
+  if(!key){alert('Nhập API key trước!');return;}
+  localStorage.setItem('gemini_api_key',key);
+  document.getElementById('api-key-bar').style.display='none';
+  alert('✅ Đã lưu API key! Bạn có thể tạo worksheet bây giờ.');
+}
+function checkApiKey(){
+  const key=getApiKey();
+  if(key){
+    document.getElementById('api-key-bar').style.display='none';
+    document.getElementById('api-key-input').value=key;
+  }
+}
+window.addEventListener('DOMContentLoaded',checkApiKey);
+</script>
+</body>
+</html>
